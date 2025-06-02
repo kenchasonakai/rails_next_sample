@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "neo-metro-city";
 
 :root {
   --background: #ffffff;
