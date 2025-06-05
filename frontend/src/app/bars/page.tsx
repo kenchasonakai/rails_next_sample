@@ -1,23 +1,109 @@
 'use client';
 
-import React from 'react';
+import React, { memo, useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+
+// バーの型定義
+interface Bar {
+  id: number;
+  name: string;
+  description: string;
+  rating: number;
+  reviewCount: number;
+  category: string;
+  area: string;
+  priceRange: string;
+  image: string;
+  tags: string[];
+}
+
+// バーカードコンポーネントをメモ化
+const BarCard = memo(({ bar }: { bar: Bar }) => {
+  return (
+    <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl overflow-hidden border border-neon-blue/30 hover:border-neon-orange/50 transition-all duration-300 group">
+      <div className="relative">
+        <Image
+          src={bar.image}
+          alt={bar.name}
+          width={300}
+          height={200}
+          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+          priority={false}
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+        />
+        <div className="absolute top-2 right-2 bg-black/50 rounded-lg px-2 py-1">
+          <span className="text-neon-cyan text-sm font-medium">{bar.area}</span>
+        </div>
+      </div>
+      
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="text-xl font-bold text-neon-blue group-hover:text-neon-cyan transition-colors">
+            {bar.name}
+          </h3>
+          <span className="text-neon-orange font-bold">{bar.priceRange}</span>
+        </div>
+        
+        <p className="text-gray-300 text-sm mb-3 line-clamp-2">
+          {bar.description}
+        </p>
+        
+        <div className="flex items-center gap-4 mb-3">
+          <div className="flex items-center gap-1">
+            <span className="text-yellow-400">★</span>
+            <span className="text-white font-medium">{bar.rating}</span>
+            <span className="text-gray-400 text-sm">({bar.reviewCount})</span>
+          </div>
+          <span className="text-neon-pink text-sm">{bar.category}</span>
+        </div>
+        
+        <div className="flex flex-wrap gap-1 mb-4">
+          {bar.tags.map((tag, index) => (
+            <span
+              key={index}
+              className="bg-neon-blue/20 text-neon-cyan text-xs px-2 py-1 rounded-full border border-neon-blue/30"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+        
+        <Link
+          href={`/bars/${bar.id}`}
+          className="inline-block w-full bg-gradient-to-r from-neon-blue to-neon-cyan text-white text-center py-2 rounded-lg font-medium hover:from-neon-cyan hover:to-neon-blue transition-all duration-300 neon-glow"
+        >
+          詳細を見る
+        </Link>
+      </div>
+    </div>
+  );
+});
+
+BarCard.displayName = 'BarCard';
 
 export default function BarsPage() {
-  // モックデータ：実際のアプリでは API から取得
-  const bars = [
-    {
-      id: 1,
-      name: 'Cyber Bar TOKYO',
-      description: '未来的な雰囲気の中で楽しめるカクテルバー。ネオンライトと先進的な音響システムが特徴。',
-      rating: 4.8,
-      reviewCount: 245,
-      category: 'カクテルバー',
-      area: '渋谷',
-      priceRange: '￥￥￥',
-      image: '/tatemono_bar.png',
-      tags: ['ネオン', 'カクテル', 'モダン']
-    },
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('すべて');
+  const [selectedArea, setSelectedArea] = useState('すべて');
+
+  // フィルタリングされたバーをメモ化
+  const filteredBars = useMemo(() => {
+    // モックデータ：実際のアプリでは API から取得
+    const bars = [
+      {
+        id: 1,
+        name: 'Cyber Bar TOKYO',
+        description: '未来的な雰囲気の中で楽しめるカクテルバー。ネオンライトと先進的な音響システムが特徴。',
+        rating: 4.8,
+        reviewCount: 245,
+        category: 'カクテルバー',
+        area: '渋谷',
+        priceRange: '￥￥￥',
+        image: '/tatemono_bar.png',
+        tags: ['ネオン', 'カクテル', 'モダン']
+      },
     {
       id: 2,
       name: 'Electric Dreams',
@@ -80,20 +166,17 @@ export default function BarsPage() {
     }
   ];
 
-  const [selectedCategory, setSelectedCategory] = React.useState('すべて');
-  const [selectedArea, setSelectedArea] = React.useState('すべて');
-  const [searchTerm, setSearchTerm] = React.useState('');
+    return bars.filter(bar => {
+      const categoryMatch = selectedCategory === 'すべて' || bar.category === selectedCategory;
+      const areaMatch = selectedArea === 'すべて' || bar.area === selectedArea;
+      const searchMatch = bar.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         bar.description.toLowerCase().includes(searchTerm.toLowerCase());
+      return categoryMatch && areaMatch && searchMatch;
+    });
+  }, [selectedCategory, selectedArea, searchTerm]);
 
   const categories = ['すべて', 'カクテルバー', 'ラウンジバー', 'テーマバー', 'スカイバー', 'アンダーグラウンド', 'テクノロジーバー'];
   const areas = ['すべて', '渋谷', '新宿', '六本木', '東京駅', '秋葉原', 'お台場'];
-
-  const filteredBars = bars.filter(bar => {
-    const categoryMatch = selectedCategory === 'すべて' || bar.category === selectedCategory;
-    const areaMatch = selectedArea === 'すべて' || bar.area === selectedArea;
-    const searchMatch = bar.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       bar.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return categoryMatch && areaMatch && searchMatch;
-  });
 
   return (
     <div className="min-h-screen pt-24 pb-8 px-4">
@@ -164,66 +247,7 @@ export default function BarsPage() {
         {/* Bars Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredBars.map(bar => (
-            <div key={bar.id} className="bg-gray-900 border border-neon-blue rounded-lg overflow-hidden hover:glow-neon-blue transition-all group cursor-pointer">
-              {/* Bar Image */}
-              <div className="w-full h-48 bg-gray-800 relative overflow-hidden">
-                <img 
-                  src={bar.image} 
-                  alt={bar.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute top-4 left-4">
-                  <span className="bg-neon-pink text-cyber-black px-3 py-1 rounded-full text-sm font-bold">
-                    {bar.category}
-                  </span>
-                </div>
-                <div className="absolute top-4 right-4">
-                  <span className="bg-neon-cyan text-cyber-black px-3 py-1 rounded-full text-sm font-bold">
-                    {bar.area}
-                  </span>
-                </div>
-              </div>
-
-              {/* Bar Info */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-neon-pink mb-2 group-hover:text-neon-cyan transition-colors">
-                  {bar.name}
-                </h3>
-                
-                <p className="text-gray-300 text-sm mb-4 line-clamp-2">
-                  {bar.description}
-                </p>
-
-                {/* Rating and Reviews */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center">
-                    <div className="flex text-neon-orange mr-2">
-                      {'★'.repeat(Math.floor(bar.rating))}
-                      {bar.rating % 1 !== 0 && '☆'}
-                    </div>
-                    <span className="text-neon-cyan font-bold">{bar.rating}</span>
-                    <span className="text-gray-400 text-sm ml-2">({bar.reviewCount}件)</span>
-                  </div>
-                  <span className="text-neon-orange font-bold">{bar.priceRange}</span>
-                </div>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {bar.tags.map(tag => (
-                    <span key={tag} className="bg-gray-800 text-neon-cyan px-2 py-1 rounded-full text-xs border border-neon-cyan">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Action Button */}
-                <Link href={`/bars/${bar.id}`}>
-                  <button className="w-full bg-neon-blue text-cyber-black py-2 rounded-lg font-bold hover:bg-neon-cyan transition-colors glow-neon-blue">
-                    詳細を見る
-                  </button>
-                </Link>
-              </div>
-            </div>
+            <BarCard key={bar.id} bar={bar} />
           ))}
         </div>
 

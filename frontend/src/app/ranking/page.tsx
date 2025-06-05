@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function RankingPage() {
   // モックランキングデータ：実際のアプリでは API から取得
@@ -286,9 +287,11 @@ export default function RankingPage() {
                     </div>
                     
                     <div className="w-20 h-20 mr-6">
-                      <img
+                      <Image
                         src={bar.image}
                         alt={bar.name}
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover rounded border border-neon-cyan"
                       />
                     </div>
@@ -347,9 +350,11 @@ export default function RankingPage() {
                     </div>
                     
                     <div className="w-20 h-20 mr-6">
-                      <img
+                      <Image
                         src={cocktail.image}
                         alt={cocktail.name}
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover rounded border border-neon-pink"
                       />
                     </div>

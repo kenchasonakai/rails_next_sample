@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 
 // ユーザーデータ（サンプル）
@@ -352,10 +353,12 @@ export default function UserProfilePage() {
                   {review.images && review.images.length > 0 && (
                     <div className="flex gap-2 mb-4">
                       {review.images.map((image, index) => (
-                        <img
+                        <Image
                           key={index}
                           src={image}
                           alt={`${review.barName} - ${index + 1}`}
+                          width={80}
+                          height={80}
                           className="w-20 h-20 object-cover rounded border border-neon-cyan/30"
                         />
                       ))}

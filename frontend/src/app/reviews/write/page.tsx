@@ -335,6 +335,7 @@ export default function WriteReviewPage() {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {formData.photos.map((photo, index) => (
                     <div key={index} className="relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={URL.createObjectURL(photo)}
                         alt={`アップロード ${index + 1}`}
@@ -366,7 +367,7 @@ export default function WriteReviewPage() {
                   name="recommend"
                   value="true"
                   checked={formData.recommend === true}
-                  onChange={(e) => setFormData(prev => ({ ...prev, recommend: true }))}
+                  onChange={() => setFormData(prev => ({ ...prev, recommend: true }))}
                   className="hidden"
                 />
                 <div className={`w-6 h-6 rounded-full border-2 mr-3 flex items-center justify-center ${
@@ -384,7 +385,7 @@ export default function WriteReviewPage() {
                   name="recommend"
                   value="false"
                   checked={formData.recommend === false}
-                  onChange={(e) => setFormData(prev => ({ ...prev, recommend: false }))}
+                  onChange={() => setFormData(prev => ({ ...prev, recommend: false }))}
                   className="hidden"
                 />
                 <div className={`w-6 h-6 rounded-full border-2 mr-3 flex items-center justify-center ${

@@ -1,335 +1,348 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
+import React, { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+
+interface FavoriteBar {
+  id: string;
+  name: string;
+  category: string;
+  rating: number;
+  image: string;
+  description: string;
+  address: string;
+  priceRange: string;
+  tags: string[];
+  addedDate: string;
+}
 
 export default function FavoritesPage() {
-  const [activeTab, setActiveTab] = useState<"bars" | "reviews">("bars");
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'rating' | 'name'>('newest');
+  const [filterBy, setFilterBy] = useState<'all' | 'theme' | 'cocktail' | 'sky' | 'underground'>('all');
 
-  // ユーザー名からユーザーIDへのマッピング
-  const userNameToId: Record<string, string> = {
-    'CyberDrinker': 'cyber-drinker',
-    'NeonNinja': 'neon-ninja',
-    'TechGuru': 'cyber-drinker'
+  // モックお気に入りデータ
+  const favoritesList: FavoriteBar[] = [
+    {
+      id: 'matrix-lounge',
+      name: 'Matrix Lounge',
+      category: 'テーマバー',
+      rating: 4.8,
+      image: '/tatemono_bar.png',
+      description: 'サイバーパンクの世界観を完全再現した未来的なラウンジ',
+      address: '渋谷区道玄坂2-10-7',
+      priceRange: '¥3000-5000',
+      tags: ['サイバーパンク', 'カクテル', 'デート'],
+      addedDate: '2024-12-08'
+    },
+    {
+      id: 'cyber-bar-tokyo',
+      name: 'Cyber Bar TOKYO',
+      category: 'テーマバー',
+      rating: 4.5,
+      image: '/tatemono_bar.png',
+      description: 'LEDとホログラムで彩られた近未来空間',
+      address: '新宿区歌舞伎町1-14-6',
+      priceRange: '¥2500-4000',
+      tags: ['未来', 'LED', 'ホログラム'],
+      addedDate: '2024-12-07'
+    },
+    {
+      id: 'quantum-drinks',
+      name: 'Quantum Drinks',
+      category: '実験バー',
+      rating: 4.9,
+      image: '/tatemono_bar.png',
+      description: '科学実験のようなカクテル体験ができる革新的なバー',
+      address: '港区六本木3-2-1',
+      priceRange: '¥4000-6000',
+      tags: ['科学', '実験', '液体窒素'],
+      addedDate: '2024-12-06'
+    },
+    {
+      id: 'neon-heights',
+      name: 'Neon Heights',
+      category: 'スカイバー',
+      rating: 4.6,
+      image: '/tatemono_bar.png',
+      description: '40階からの絶景とネオンライトが織りなす幻想的な空間',
+      address: '千代田区丸の内1-1-1',
+      priceRange: '¥5000-8000',
+      tags: ['夜景', '高級', 'カップル'],
+      addedDate: '2024-12-05'
+    },
+    {
+      id: 'digital-underground',
+      name: 'Digital Underground',
+      category: 'アンダーグラウンド',
+      rating: 4.2,
+      image: '/tatemono_bar.png',
+      description: '地下に隠された秘密基地のような雰囲気のバー',
+      address: '中野区中野5-52-15',
+      priceRange: '¥2000-3500',
+      tags: ['地下', '隠れ家', 'クラブ'],
+      addedDate: '2024-12-04'
+    }
+  ];
+
+  // フィルタリングとソート
+  const getFilteredAndSortedFavorites = () => {
+    const filtered = favoritesList.filter(bar => {
+      if (filterBy === 'all') return true;
+      
+      switch (filterBy) {
+        case 'theme':
+          return bar.category === 'テーマバー';
+        case 'cocktail':
+          return bar.tags.includes('カクテル');
+        case 'sky':
+          return bar.category === 'スカイバー';
+        case 'underground':
+          return bar.category === 'アンダーグラウンド';
+        default:
+          return true;
+      }
+    });
+
+    // ソート
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.addedDate).getTime() - new Date(a.addedDate).getTime();
+        case 'oldest':
+          return new Date(a.addedDate).getTime() - new Date(b.addedDate).getTime();
+        case 'rating':
+          return b.rating - a.rating;
+        case 'name':
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
   };
 
-  // お気に入りのサンプルデータ
-  const favoriteBars = [
-  {
-    id: "cyberpunk-lounge",
-    name: "Cyberpunk Lounge",
-    area: "渋谷",
-    rating: 4.5,
-    image: "/tatemono_bar.png",
-    description: "ネオンが輝くサイバーパンクテーマのラウンジ",
-    priceRange: "¥¥¥",
-    addedDate: "2024-01-15"
-  },
-  {
-    id: "neon-bar",
-    name: "NEON BAR",
-    area: "新宿",
-    rating: 4.8,
-    image: "/tatemono_bar.png",
-    description: "電子音楽と光る氷が楽しめるバー",
-    priceRange: "¥¥¥¥",
-    addedDate: "2024-01-10"
-  },
-  {
-    id: "digital-mixology",
-    name: "Digital Mixology",
-    area: "六本木",
-    rating: 4.3,
-    image: "/tatemono_bar.png",
-    description: "デジタルアートと革新的なカクテル",
-    priceRange: "¥¥¥",
-    addedDate: "2024-01-08"
-  }
-];
-
-const favoriteReviews = [
-  {
-    id: 1,
-    barName: "Matrix Bar",
-    reviewer: "CyberDrinker",
-    rating: 5,
-    comment: "まるで映画の中にいるような雰囲気。光るカクテルが幻想的で、BGMも完璧。",
-    addedDate: "2024-01-12",
-    likes: 24
-  },
-  {
-    id: 2,
-    barName: "Future Spirits",
-    reviewer: "NeonNinja",
-    rating: 4,
-    comment: "革新的なカクテルが多数。特にホログラム効果のドリンクは必見。",
-    addedDate: "2024-01-09",
-    likes: 18
-  },
-  {
-    id: 3,
-    barName: "Blade Runner Bar",
-    reviewer: "TechGuru",
-    rating: 5,
-    comment: "スタッフの知識が深く、カクテルの説明も丁寧。雰囲気も最高。",
-    addedDate: "2024-01-05",
-    likes: 32
-  }
-];
+  const filteredAndSortedFavorites = getFilteredAndSortedFavorites();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric'
+    return date.toLocaleDateString('ja-JP', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
     });
+  };
+
+  const removeFavorite = (barId: string) => {
+    // 実際の実装では、ここでAPIを呼び出してお気に入りから削除する
+    console.log(`Remove ${barId} from favorites`);
   };
 
   return (
     <div className="min-h-screen bg-cyber-black text-white pt-24 pb-8">
-      <div className="container mx-auto px-4">
-        {/* ヘッダー */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-neon-blue mb-2 neon-glow">
-            お気に入り
+      <div className="max-w-7xl mx-auto px-4">
+        {/* ページヘッダー */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            <span className="text-neon-cyan glow-neon-cyan">MY</span>
+            <span className="text-neon-orange ml-4">FAVORITES</span>
           </h1>
-          <p className="text-neon-cyan text-lg">
-            あなたがお気に入りに追加したバーとレビュー
+          <p className="text-gray-300 text-lg">
+            あなたのお気に入りバーコレクション
           </p>
         </div>
 
-        {/* タブナビゲーション */}
-        <div className="mb-8">
-          <div className="flex border-b border-neon-orange/30">
-            <button
-              onClick={() => setActiveTab("bars")}
-              className={`px-6 py-3 font-medium transition-all duration-300 ${
-                activeTab === "bars"
-                  ? "text-neon-orange border-b-2 border-neon-orange neon-glow"
-                  : "text-gray-400 hover:text-neon-cyan"
-              }`}
-            >
-              バー ({favoriteBars.length})
-            </button>
-            <button
-              onClick={() => setActiveTab("reviews")}
-              className={`px-6 py-3 font-medium transition-all duration-300 ${
-                activeTab === "reviews"
-                  ? "text-neon-orange border-b-2 border-neon-orange neon-glow"
-                  : "text-gray-400 hover:text-neon-cyan"
-              }`}
-            >
-              レビュー ({favoriteReviews.length})
-            </button>
+        {/* 統計情報 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gray-900 border border-neon-blue rounded-lg p-6 text-center">
+            <div className="text-3xl font-bold text-neon-cyan mb-2">{favoritesList.length}</div>
+            <div className="text-gray-300">お気に入りバー</div>
+          </div>
+          <div className="bg-gray-900 border border-neon-blue rounded-lg p-6 text-center">
+            <div className="text-3xl font-bold text-neon-orange mb-2">
+              {(favoritesList.reduce((sum, bar) => sum + bar.rating, 0) / favoritesList.length).toFixed(1)}
+            </div>
+            <div className="text-gray-300">平均評価</div>
+          </div>
+          <div className="bg-gray-900 border border-neon-blue rounded-lg p-6 text-center">
+            <div className="text-3xl font-bold text-neon-green mb-2">
+              {new Set(favoritesList.map(bar => bar.category)).size}
+            </div>
+            <div className="text-gray-300">カテゴリ数</div>
           </div>
         </div>
 
-        {/* お気に入りバー */}
-        {activeTab === "bars" && (
-          <div className="space-y-6">
-            {favoriteBars.length === 0 ? (
-              <div className="text-center py-16">
-                <div className="text-6xl mb-4">💔</div>
-                <h3 className="text-2xl text-neon-cyan mb-2">
-                  お気に入りのバーがありません
-                </h3>
-                <p className="text-gray-400 mb-8">
-                  バーを探してお気に入りに追加してみましょう
-                </p>
-                <Link 
-                  href="/bars"
-                  className="inline-block bg-neon-orange text-cyber-black px-8 py-3 rounded-lg font-bold hover:bg-neon-cyan hover:text-white transition-all duration-300 neon-glow"
+        {/* フィルタリング・ソート */}
+        <div className="bg-gray-900 border border-neon-blue rounded-lg p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* ソート */}
+            <div>
+              <label className="block text-neon-cyan text-sm font-bold mb-2">
+                並び順
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest' | 'rating' | 'name')}
+                className="w-full bg-gray-800 border border-neon-cyan/30 rounded-lg px-4 py-2 text-white focus:border-neon-orange focus:outline-none transition-colors"
+              >
+                <option value="newest">追加日（新しい順）</option>
+                <option value="oldest">追加日（古い順）</option>
+                <option value="rating">評価順</option>
+                <option value="name">名前順</option>
+              </select>
+            </div>
+
+            {/* フィルター */}
+            <div>
+              <label className="block text-neon-cyan text-sm font-bold mb-2">
+                カテゴリフィルター
+              </label>
+              <select
+                value={filterBy}
+                onChange={(e) => setFilterBy(e.target.value as 'all' | 'theme' | 'cocktail' | 'sky' | 'underground')}
+                className="w-full bg-gray-800 border border-neon-cyan/30 rounded-lg px-4 py-2 text-white focus:border-neon-orange focus:outline-none transition-colors"
+              >
+                <option value="all">すべて</option>
+                <option value="theme">テーマバー</option>
+                <option value="cocktail">カクテルバー</option>
+                <option value="sky">スカイバー</option>
+                <option value="underground">アンダーグラウンド</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* お気に入りリスト */}
+        <div className="space-y-6">
+          {filteredAndSortedFavorites.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">💔</div>
+              <p className="text-gray-400 text-lg mb-4">
+                {filterBy === 'all' 
+                  ? 'まだお気に入りバーがありません'
+                  : '条件に合うお気に入りバーが見つかりませんでした'
+                }
+              </p>
+              <Link
+                href="/bars"
+                className="inline-block bg-neon-cyan text-black px-6 py-3 rounded-lg font-bold hover:bg-neon-orange transition-colors"
+              >
+                バーを探す
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {filteredAndSortedFavorites.map(bar => (
+                <div
+                  key={bar.id}
+                  className="bg-gray-900 border border-neon-blue rounded-lg p-6 hover:border-neon-cyan transition-colors group"
                 >
-                  バーを探す
-                </Link>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {favoriteBars.map((bar) => (
-                  <div
-                    key={bar.id}
-                    className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl overflow-hidden border border-neon-blue/30 hover:border-neon-orange/50 transition-all duration-300 group"
-                  >
-                    <div className="relative">
-                      <img
+                  <div className="flex gap-4">
+                    {/* バー画像 */}
+                    <div className="w-24 h-24 flex-shrink-0">
+                      <Image
                         src={bar.image}
                         alt={bar.name}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        width={96}
+                        height={96}
+                        className="w-full h-full object-cover rounded-lg"
                       />
-                      <div className="absolute top-2 right-2">
-                        <button className="bg-red-500/80 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                    </div>
+
+                    {/* バー情報 */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <Link 
+                            href={`/bars/${bar.id}`}
+                            className="text-neon-cyan hover:text-neon-orange transition-colors font-bold text-lg"
+                          >
+                            {bar.name}
+                          </Link>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-neon-orange text-sm">{bar.category}</span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-neon-orange">★</span>
+                              <span className="text-white font-bold">{bar.rating}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => removeFavorite(bar.id)}
+                          className="text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100"
+                          title="お気に入りから削除"
+                        >
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                           </svg>
                         </button>
                       </div>
-                    </div>
 
-                    <div className="p-6">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-xl font-bold text-neon-blue">
-                          {bar.name}
-                        </h3>
-                        <span className="text-neon-orange font-bold">
-                          {bar.priceRange}
-                        </span>
-                      </div>
+                      <p className="text-gray-300 text-sm mb-3 line-clamp-2">{bar.description}</p>
 
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-neon-cyan">{bar.area}</span>
-                        <div className="flex items-center gap-1">
-                          <span className="text-yellow-400">★</span>
-                          <span className="text-white font-medium">{bar.rating}</span>
-                        </div>
-                      </div>
-
-                      <p className="text-gray-300 text-sm mb-4">
-                        {bar.description}
-                      </p>
-
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-400">
-                          追加日: {formatDate(bar.addedDate)}
-                        </span>
-                        <Link
-                          href={`/bars/${bar.id}`}
-                          className="bg-neon-blue text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-neon-cyan transition-colors neon-glow"
-                        >
-                          詳細を見る
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* お気に入りレビュー */}
-        {activeTab === "reviews" && (
-          <div className="space-y-6">
-            {favoriteReviews.length === 0 ? (
-              <div className="text-center py-16">
-                <div className="text-6xl mb-4">📝</div>
-                <h3 className="text-2xl text-neon-cyan mb-2">
-                  お気に入りのレビューがありません
-                </h3>
-                <p className="text-gray-400 mb-8">
-                  気になるレビューをお気に入りに追加してみましょう
-                </p>
-                <Link 
-                  href="/reviews"
-                  className="inline-block bg-neon-orange text-cyber-black px-8 py-3 rounded-lg font-bold hover:bg-neon-cyan hover:text-white transition-all duration-300 neon-glow"
-                >
-                  レビューを見る
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {favoriteReviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="bg-gradient-to-r from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-neon-blue/30 hover:border-neon-orange/50 transition-all duration-300"
-                  >
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-xl font-bold text-neon-blue mb-1">
-                          {review.barName}
-                        </h3>
-                        <div className="flex items-center gap-3">
-                          <span className="text-neon-cyan">
-                            by <Link href={`/users/${userNameToId[review.reviewer] || 'cyber-drinker'}`} className="text-neon-cyan hover:text-neon-pink transition-colors font-bold">
-                              {review.reviewer}
-                            </Link>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {bar.tags.map(tag => (
+                          <span
+                            key={tag}
+                            className="bg-gray-800 text-neon-cyan px-2 py-1 rounded-full text-xs border border-neon-cyan/30"
+                          >
+                            #{tag}
                           </span>
-                          <div className="flex items-center gap-1">
-                            {[...Array(5)].map((_, i) => (
-                              <span
-                                key={i}
-                                className={`text-lg ${
-                                  i < review.rating ? "text-yellow-400" : "text-gray-600"
-                                }`}
-                              >
-                                ★
-                              </span>
-                            ))}
-                          </div>
-                        </div>
+                        ))}
                       </div>
-                      <button className="bg-red-500/80 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                        </svg>
-                      </button>
-                    </div>
 
-                    <p className="text-gray-300 mb-4 leading-relaxed">
-                      {review.comment}
-                    </p>
-
-                    <div className="flex justify-between items-center text-sm">
-                      <div className="flex items-center gap-4">
-                        <span className="text-gray-400">
-                          追加日: {formatDate(review.addedDate)}
-                        </span>
-                        <div className="flex items-center gap-1 text-neon-orange">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                          </svg>
-                          <span>{review.likes}</span>
-                        </div>
+                      <div className="flex items-center justify-between text-sm text-gray-400">
+                        <span>{bar.priceRange}</span>
+                        <span>追加: {formatDate(bar.addedDate)}</span>
                       </div>
-                      <Link
-                        href="/reviews"
-                        className="text-neon-cyan hover:text-neon-blue transition-colors"
-                      >
-                        レビューページで見る →
-                      </Link>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
+
+                  {/* アクションボタン */}
+                  <div className="flex gap-3 mt-4 pt-4 border-t border-gray-700">
+                    <Link
+                      href={`/bars/${bar.id}`}
+                      className="flex-1 bg-neon-cyan text-black px-4 py-2 rounded-lg font-bold text-center hover:bg-neon-orange transition-colors"
+                    >
+                      詳細を見る
+                    </Link>
+                    <Link
+                      href={`/reviews/write?barId=${bar.id}`}
+                      className="flex-1 bg-gray-700 text-white px-4 py-2 rounded-lg font-bold text-center hover:bg-gray-600 transition-colors"
+                    >
+                      レビューを書く
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* バー探索の提案 */}
+        {filteredAndSortedFavorites.length > 0 && (
+          <div className="bg-gray-900 border border-neon-blue rounded-lg p-8 mt-12 text-center">
+            <h3 className="text-2xl font-bold text-neon-cyan mb-4">新しいバーを発見しませんか？</h3>
+            <p className="text-gray-300 mb-6">
+              あなたの好みに合った新しいバーを見つけて、コレクションを充実させましょう
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link
+                href="/bars"
+                className="bg-neon-orange text-black px-6 py-3 rounded-lg font-bold hover:bg-neon-cyan transition-colors"
+              >
+                バーを探す
+              </Link>
+              <Link
+                href="/ranking"
+                className="bg-gray-700 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+              >
+                ランキングを見る
+              </Link>
+            </div>
           </div>
         )}
-
-        {/* 統計情報 */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-neon-blue/20 to-neon-cyan/20 rounded-xl p-6 border border-neon-blue/30">
-            <h3 className="text-lg font-bold text-neon-blue mb-2">
-              お気に入りバー
-            </h3>
-            <p className="text-3xl font-bold text-white">
-              {favoriteBars.length}
-            </p>
-            <p className="text-gray-400 text-sm">個所保存済み</p>
-          </div>
-
-          <div className="bg-gradient-to-br from-neon-orange/20 to-neon-cyan/20 rounded-xl p-6 border border-neon-orange/30">
-            <h3 className="text-lg font-bold text-neon-orange mb-2">
-              お気に入りレビュー
-            </h3>
-            <p className="text-3xl font-bold text-white">
-              {favoriteReviews.length}
-            </p>
-            <p className="text-gray-400 text-sm">件保存済み</p>
-          </div>
-
-          <div className="bg-gradient-to-br from-neon-cyan/20 to-neon-blue/20 rounded-xl p-6 border border-neon-cyan/30">
-            <h3 className="text-lg font-bold text-neon-cyan mb-2">
-              平均評価
-            </h3>
-            <p className="text-3xl font-bold text-white">
-              {favoriteBars.length > 0 
-                ? (favoriteBars.reduce((sum, bar) => sum + bar.rating, 0) / favoriteBars.length).toFixed(1)
-                : "0.0"
-              }
-            </p>
-            <p className="text-gray-400 text-sm">お気に入りバーの平均</p>
-          </div>
-        </div>
       </div>
     </div>
   );

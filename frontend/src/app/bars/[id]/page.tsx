@@ -1,9 +1,53 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
+
+interface Cocktail {
+  name: string;
+  price: string;
+  description: string;
+}
+
+interface Bar {
+  id: number;
+  name: string;
+  area: string;
+  rating: number;
+  image: string;
+  images: string[];
+  description: string;
+  priceRange: string;
+  category: string;
+  reviewCount: number;
+  features: string[];
+  openingHours: {
+    weekday: string;
+    weekend: string;
+    holiday: string;
+  };
+  openHours: {
+    weekday: string;
+    weekend: string;
+    holiday: string;
+  };
+  address: string;
+  phone: string;
+  website: string;
+  tags: string[];
+  cocktails: Array<{
+    name: string;
+    price: string;
+    description: string;
+  }>;
+  signature_cocktails: Array<{
+    name: string;
+    price: string;
+    description: string;
+  }>;
+}
 
 export default function BarDetailPage() {
   const params = useParams();
@@ -20,7 +64,7 @@ export default function BarDetailPage() {
   };
 
   // モックデータ：実際のアプリでは API から取得
-  const barData: Record<string, any> = {
+  const barData: Record<string, Bar> = {
     '1': {
       id: 1,
       name: 'Cyber Bar TOKYO',
@@ -33,6 +77,12 @@ export default function BarDetailPage() {
       address: '東京都渋谷区道玄坂2-10-12 サイバービル B1F',
       phone: '03-1234-5678',
       website: 'https://cyber-bar-tokyo.com',
+      image: '/tatemono_bar.png',
+      openingHours: {
+        weekday: '18:00 - 02:00',
+        weekend: '17:00 - 03:00',
+        holiday: '定休日: 月曜日'
+      },
       openHours: {
         weekday: '18:00 - 02:00',
         weekend: '17:00 - 03:00',
@@ -52,6 +102,11 @@ export default function BarDetailPage() {
         'ライブDJ',
         'VIP ラウンジ'
       ],
+      cocktails: [
+        { name: 'Neon Genesis', price: '¥1,800', description: 'ブルーキュラソーとウォッカのネオンカクテル' },
+        { name: 'Matrix Shot', price: '¥1,200', description: 'グリーンアブサンの特製ショット' },
+        { name: 'Cyber Punch', price: '¥2,200', description: 'フルーツミックスの光るパンチ' }
+      ],
       signature_cocktails: [
         { name: 'Neon Genesis', price: '¥1,800', description: 'ブルーキュラソーとウォッカのネオンカクテル' },
         { name: 'Matrix Shot', price: '¥1,200', description: 'グリーンアブサンの特製ショット' },
@@ -70,6 +125,12 @@ export default function BarDetailPage() {
       address: '東京都新宿区歌舞伎町1-15-3 エレクトリックビル 5F',
       phone: '03-2345-6789',
       website: 'https://electric-dreams.com',
+      image: '/tatemono_bar.png',
+      openingHours: {
+        weekday: '19:00 - 01:00',
+        weekend: '18:00 - 02:00',
+        holiday: '定休日: 火曜日'
+      },
       openHours: {
         weekday: '19:00 - 01:00',
         weekend: '18:00 - 02:00',
@@ -78,6 +139,10 @@ export default function BarDetailPage() {
       images: ['/tatemono_bar.png', '/tatemono_bar.png', '/tatemono_bar.png'],
       tags: ['エレクトロ', 'ダンス', 'カジュアル', 'LED'],
       features: ['LED ライトショー', 'ダンスフロア', 'DJブース', 'テラス席'],
+      cocktails: [
+        { name: 'Electric Blue', price: '¥1,500', description: 'エレクトリックブルーのシグネチャーカクテル' },
+        { name: 'Dream Fizz', price: '¥1,300', description: 'スパークリングの夢のカクテル' }
+      ],
       signature_cocktails: [
         { name: 'Electric Blue', price: '¥1,500', description: 'エレクトリックブルーのシグネチャーカクテル' },
         { name: 'Dream Fizz', price: '¥1,300', description: 'スパークリングの夢のカクテル' }
@@ -95,6 +160,12 @@ export default function BarDetailPage() {
       address: '東京都港区六本木3-8-15 マトリックスタワー 10F',
       phone: '03-3456-7890',
       website: 'https://matrix-lounge.com',
+      image: '/tatemono_bar.png',
+      openingHours: {
+        weekday: '17:00 - 02:00',
+        weekend: '16:00 - 03:00',
+        holiday: '定休日: なし'
+      },
       openHours: {
         weekday: '17:00 - 02:00',
         weekend: '16:00 - 03:00',
@@ -103,6 +174,11 @@ export default function BarDetailPage() {
       images: ['/tatemono_bar.png', '/tatemono_bar.png', '/tatemono_bar.png', '/tatemono_bar.png'],
       tags: ['サイバーパンク', 'テーマ', 'プレミアム', 'ホログラム'],
       features: ['ホログラム バーテンダー', 'VR体験コーナー', 'プレミアムラウンジ', '個室完備'],
+      cocktails: [
+        { name: 'Red Pill', price: '¥2,500', description: '真実を見せる赤いカクテル' },
+        { name: 'Blue Pill', price: '¥2,500', description: '夢の世界へ誘う青いカクテル' },
+        { name: 'Neo Martini', price: '¥3,000', description: '最高級のプレミアムマティーニ' }
+      ],
       signature_cocktails: [
         { name: 'Red Pill', price: '¥2,500', description: '真実を見せる赤いカクテル' },
         { name: 'Blue Pill', price: '¥2,500', description: '夢の世界へ誘う青いカクテル' },
@@ -112,6 +188,7 @@ export default function BarDetailPage() {
   };
 
   const bar = barData[id];
+  const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
 
   // バーが見つからない場合の処理
   if (!bar) {
@@ -127,8 +204,6 @@ export default function BarDetailPage() {
       </div>
     );
   }
-
-  const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
 
   return (
     <div className="min-h-screen pt-24 pb-8 px-4">
@@ -149,18 +224,22 @@ export default function BarDetailPage() {
           {/* Image Gallery */}
           <div>
             <div className="mb-4">
-              <img
+              <Image
                 src={bar.images[selectedImageIndex]}
                 alt={bar.name}
+                width={800}
+                height={384}
                 className="w-full h-96 object-cover rounded-lg border-2 border-neon-blue glow-neon-blue"
               />
             </div>
             <div className="grid grid-cols-4 gap-2">
               {bar.images.map((image: string, index: number) => (
-                <img
+                <Image
                   key={index}
                   src={image}
                   alt={`${bar.name} - ${index + 1}`}
+                  width={80}
+                  height={80}
                   className={`w-full h-20 object-cover rounded cursor-pointer border-2 transition-all ${
                     selectedImageIndex === index 
                       ? 'border-neon-pink glow-neon-pink' 
@@ -281,7 +360,7 @@ export default function BarDetailPage() {
           <div className="bg-gray-900 border border-neon-orange rounded-lg p-6">
             <h3 className="text-2xl font-bold text-neon-orange mb-4 glow-neon-orange">シグネチャーカクテル</h3>
             <div className="space-y-4">
-              {bar.signature_cocktails.map((cocktail: any, index: number) => (
+              {bar.signature_cocktails.map((cocktail: Cocktail, index: number) => (
                 <div key={index} className="border-b border-gray-700 pb-3 last:border-b-0">
                   <div className="flex justify-between items-start mb-1">
                     <h4 className="text-neon-cyan font-bold">{cocktail.name}</h4>

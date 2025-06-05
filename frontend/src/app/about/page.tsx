@@ -1,4 +1,15 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+
+// 静的生成のためのメタデータ
+export const metadata: Metadata = {
+  title: "About | Neon Spirits",
+  description: "Neon Spiritsについて - サイバーパンクバーレビューサイトの詳細情報",
+  keywords: "バーレビュー, サイバーパンク, Neo Metro City, カクテル",
+};
+
+// 静的生成を強制
+export const dynamic = 'force-static';
 
 export default function AboutPage() {
   return (
